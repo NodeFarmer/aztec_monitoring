@@ -196,7 +196,7 @@ async function refreshAll() {
 
   for (const [i, prover] of provers.entries()) {
     await new Promise(resolve => setTimeout(resolve, 200)); // 5 calls/sec max
-    updateCardData(prover, i);
+    await updateCardData(prover, i);
   }
 }
 
