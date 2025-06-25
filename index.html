@@ -15,6 +15,10 @@
       <button id="save-apikey" class="bg-green-500 text-black px-4 py-2 rounded">Save Key</button>
     </div>
     <button id="add-btn" class="bg-green-500 text-black px-4 py-2 rounded">Add Node</button>
+    <button id="export-btn" class="bg-blue-500 text-black px-4 py-2 rounded">Export</button>
+    <label for="import-file" class="bg-yellow-400 text-black px-4 py-2 rounded cursor-pointer">Import</label>
+    <input type="file" id="import-file" class="hidden" accept=".json">
+
   </header>
 
   <main class="p-6">
@@ -50,7 +54,8 @@
     const cancelBtn = document.getElementById('cancel-btn');
     const saveApiBtn = document.getElementById('save-apikey');
     const apiKeyInput = document.getElementById('apikey-input');
-
+    const exportBtn = document.getElementById('export-btn');
+    const importInput = document.getElementById('import-file');
     let provers = JSON.parse(localStorage.getItem('provers') || '[]');
     let etherscanKey = localStorage.getItem('etherscan_key') || '';
 
@@ -172,6 +177,34 @@
         container.insertAdjacentHTML('beforeend', cardHtml);
       }
     }
+
+    exportBtn.onclick = () => {
+  const blob = new Blob([JSON.stringify(provers, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'aztec_nodes.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
+importInput.onchange = async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const text = await file.text();
+  try {
+    const imported = JSON.parse(text);
+    if (!Array.isArray(imported)) throw new Error("Invalid format");
+    provers = imported;
+    localStorage.setItem('provers', JSON.stringify(provers));
+    refreshAll();
+    alert('Import successful.');
+  } catch (err) {
+    alert('Invalid file format.');
+  }
+};
 
     refreshAll();
     setInterval(refreshAll, 300000);
