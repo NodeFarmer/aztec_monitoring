@@ -99,8 +99,7 @@ form.onsubmit = async (e) => {
   modal.classList.add('hidden');
   refreshAll();
 };
-
-function timeAgo(dateStr){
+  function timeAgo(dateStr){
   return (Date.now() - new Date(dateStr).getTime()) / 1000 / 60;
 }
 
@@ -153,10 +152,21 @@ async function renderCardSkeleton(prover, index) {
 
 async function updateCardData(prover, index) {
   const card = document.getElementById(`node-card-${index}`);
+  if (!card) return;
+
   const txEl = card.querySelector('.last-tx');
   const txCountEl = card.querySelector('.tx-count');
   const statusDot = card.querySelector('span.rounded-full');
   const ethEl = card.querySelector('.eth-balance');
+
+  // 🌀 Show spinners before loading
+  if (txEl) txEl.innerHTML = '<span class="spinner"></span>';
+  if (txCountEl) txCountEl.innerHTML = '<span class="spinner"></span>';
+  if (ethEl) ethEl.innerHTML = '<span class="spinner"></span>';
+  if (statusDot) {
+    statusDot.className = 'w-3 h-3 rounded-full bg-gray-500';
+    statusDot.title = 'Loading...';
+  }
 
   if (prover.type === 'prover') {
     const tx = await fetchTxData(prover.wallet);
@@ -192,13 +202,11 @@ function refreshSingle(i) {
 function editNode(i) {
   const p = provers[i];
   modal.classList.remove('hidden');
-  Object.assign(form, {
-    index: { value: i },
-    name: { value: p.name },
-    ip: { value: p.ip },
-    wallet: { value: p.wallet },
-    type: { value: p.type }
-  });
+  form.index.value = i;
+  form.name.value = p.name;
+  form.ip.value = p.ip;
+  form.wallet.value = p.wallet;
+  form.type.value = p.type;
 }
 
 function deleteNode(i) {
