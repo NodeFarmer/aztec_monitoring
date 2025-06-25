@@ -188,9 +188,14 @@ async function updateCardData(prover, index) {
 
 async function refreshAll() {
   container.innerHTML = '';
+
   for (const [i, prover] of provers.entries()) {
     const skeleton = await renderCardSkeleton(prover, i);
     container.insertAdjacentHTML('beforeend', skeleton);
+  }
+
+  for (const [i, prover] of provers.entries()) {
+    await new Promise(resolve => setTimeout(resolve, 200)); // 5 calls/sec max
     updateCardData(prover, i);
   }
 }
