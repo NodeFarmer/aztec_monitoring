@@ -75,23 +75,27 @@
     }
 
     async function fetchTxData(wallet) {
-      if (!etherscanKey) return null;
-      try {
-        const url = `https://api-sepolia.etherscan.io/api?module=account&action=txlist&address=${wallet}&sort=desc&apikey=${etherscanKey}`;
-        const resp = await fetch(url);
-        const json = await resp.json();
-        if(json.status !== '1') return null;
-        const txs = json.result;
-        if (!txs || txs.length === 0) return null;
-        const last = txs[0];
-        return {
-          count: txs.length,
-          lastTime: last.timeStamp * 1000
-        };
-      } catch (err) {
-        return null;
-      }
+    if (!etherscanKey) return null;
+    try {
+      const url = `https://api.etherscan.io/api?module=account&action=txlist&address=${wallet}&sort=desc&apikey=${etherscanKey}`;
+      const resp = await fetch(url);
+      const json = await resp.json();
+      if (json.status !== '1') return null;
+  
+      const txs = json.result;
+      const filtered = txs.filter(tx => tx.input && tx.input.startsWith('0xff7da10c'));
+      if (filtered.length === 0) return null;
+  
+      const last = filtered[0];
+      return {
+        count: filtered.length,
+        lastTime: last.timeStamp * 1000
+      };
+    } catch (err) {
+      return null;
     }
+  }
+
 
     async function renderCard(prover){
       const data = await fetchTxData(prover.wallet);
