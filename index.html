@@ -102,7 +102,7 @@ form.onsubmit = async (e) => {
 function timeAgo(dateStr){
   return (Date.now() - new Date(dateStr).getTime()) / 1000 / 60;
 }
-async function fetchTxData(wallet) {
+  async function fetchTxData(wallet) {
   if (!etherscanKey) return null;
   try {
     const url = `https://api-sepolia.etherscan.io/api?module=account&action=txlist&address=${wallet}&sort=desc&apikey=${etherscanKey}`;
@@ -163,27 +163,37 @@ async function updateCardData(prover, index) {
   const card = document.getElementById(`node-card-${index}`);
   if (!card) return;
 
+  const lastTx = card.querySelector('.last-tx');
+  const txCount = card.querySelector('.tx-count');
+  const statusDot = card.querySelector('span.rounded-full');
+  const balanceEl = card.querySelector('.eth-balance');
+
   if (prover.type === 'prover') {
     const txData = await fetchTxData(prover.wallet);
-    const lastTx = card.querySelector('.last-tx');
-    const txCount = card.querySelector('.tx-count');
-    const statusDot = card.querySelector('span.rounded-full');
     if (txData) {
+      lastTx.classList.remove('spinner');
       lastTx.textContent = new Date(txData.lastTime).toLocaleString();
+
+      txCount.classList.remove('spinner');
       txCount.textContent = txData.count;
+
       const isActive = timeAgo(txData.lastTime) < 60;
       statusDot.className = `w-3 h-3 rounded-full ${isActive ? 'bg-green-500' : 'bg-red-500'}`;
       statusDot.title = isActive ? 'Active' : 'Inactive';
     } else {
+      lastTx.classList.remove('spinner');
       lastTx.textContent = "N/A";
-      txCount.textContent = "N/A";
+      if (txCount) {
+        txCount.classList.remove('spinner');
+        txCount.textContent = "N/A";
+      }
       statusDot.className = `w-3 h-3 rounded-full bg-red-500`;
       statusDot.title = 'Inactive';
     }
   }
 
   const balance = await fetchSepoliaEthBalance(prover.wallet);
-  const balanceEl = card.querySelector('.eth-balance');
+  balanceEl.classList.remove('spinner');
   balanceEl.textContent = balance ?? 'N/A';
 }
 
