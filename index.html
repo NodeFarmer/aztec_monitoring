@@ -164,10 +164,10 @@ async function renderCardSkeleton(prover, index) {
       </div>
       <p class="text-sm text-gray-300"><strong>IP:</strong> ${prover.ip}</p>
       <p class="text-sm text-gray-300"><strong>Wallet:</strong> ${prover.wallet}</p>
-      <p class="text-sm text-gray-300"><strong>Sepolia ETH:</strong> <span class="eth-balance"><span class="spinner"></span></span></p>
+      <p class="text-sm text-gray-300"><strong>Sepolia ETH:</strong> <span class="eth-balance"></span></p>
       ${prover.type === 'prover' ? `
-      <p class="text-sm text-gray-300"><strong>Last Tx:</strong> <span class="last-tx"><span class="spinner"></span></span></p>
-      <p class="text-sm text-gray-300 mt-2"><strong>Transactions:</strong> <span class="tx-count text-green-400 font-bold"><span class="spinner"></span></span></p>` : ''}
+      <p class="text-sm text-gray-300"><strong>Last Tx:</strong> <span class="last-tx"></span></p>
+      <p class="text-sm text-gray-300 mt-2"><strong>Transactions:</strong> <span class="tx-count text-green-400 font-bold"></span></p>` : ''}
       <div class="mt-4 flex justify-end gap-2">
         <button onclick="editNode(${index})" class="text-yellow-400 hover:underline">Edit</button>
         <button onclick="deleteNode(${index})" class="text-red-500 hover:underline">Delete</button>
@@ -228,7 +228,7 @@ async function updateCardData(prover, index) {
   ethEl.innerHTML = eth ?? "N/A";
 }
 
-async function refreshAll() {
+async function refreshAll(refreshdata = false) {
   container.innerHTML = '';
 
   for (const [i, prover] of provers.entries()) {
@@ -236,9 +236,12 @@ async function refreshAll() {
     container.insertAdjacentHTML('beforeend', skeleton);
   }
 
-  for (const [i, prover] of provers.entries()) {
-    await new Promise(resolve => setTimeout(resolve, 200)); // 5 calls/sec max
-    await updateCardData(prover, i);
+  if(refreshdata)
+  {
+    for (const [i, prover] of provers.entries()) {
+      await new Promise(resolve => setTimeout(resolve, 200)); // 5 calls/sec max
+      await updateCardData(prover, i);
+    }
   }
 }
 
@@ -260,7 +263,7 @@ function deleteNode(i) {
   if (confirm("Delete this node?")) {
     provers.splice(i, 1);
     localStorage.setItem('provers', JSON.stringify(provers));
-    refreshAll();
+    refreshAll(false);
   }
 }
 
