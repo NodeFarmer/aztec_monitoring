@@ -139,7 +139,7 @@ async function fetchSepoliaEthBalance(wallet) {
 
     const data = await response.json();
     console.log(`Node at ${ip} is ready:`, data.status);
-    return data.status;
+    return data.status ? data.status : "error :" + data.error;
   } catch (error) {
     console.error(`Error checking node readiness at ${ip}:`, error);
     return null;
