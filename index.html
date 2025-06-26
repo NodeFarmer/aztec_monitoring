@@ -292,8 +292,10 @@ importInput.onchange = async e => {
   }
 };
 
-refreshAll();
-setInterval(refreshAll, 300000);
+refreshAll(true);
+setInterval(()=>{
+  refreshAll(true)}
+            , 300000);
 </script>
 </body>
 </html>
