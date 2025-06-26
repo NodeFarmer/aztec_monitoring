@@ -130,7 +130,7 @@ async function fetchSepoliaEthBalance(wallet) {
  
   async function fetchIsReady(ip) {
   try {
-    const response = await fetch(`http://${ip}:8080/`, {
+    const response = await fetch(`https://node-farmer.fr/check-aztec-sequencer?ip=${ip}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
