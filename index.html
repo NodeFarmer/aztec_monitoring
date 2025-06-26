@@ -209,8 +209,8 @@ async function updateCardData(prover, index) {
   const answering = await fetchIsReady(prover.ip);
   if(answering == "ok")
   {
-     statusDot.className = `w-3 h-3 rounded-full ${isActive ? 'bg-green-500' : 'bg-red-500'}`;
-      statusDot.title = isActive ? "Active" : "Inactive";
+     statusDot.className = `w-3 h-3 rounded-full bg-green-500`;
+      statusDot.title =  "Active" ;
   }
     else
   {
