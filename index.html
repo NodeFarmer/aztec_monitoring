@@ -127,21 +127,29 @@ async function fetchSepoliaEthBalance(wallet) {
   } catch { return null; }
 }
 
+ 
   async function fetchIsReady(ip) {
-  try {
-    const response = await fetch(`http://${ip}:8080/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        jsonrpc: '2.0',
-        method: 'node_isReady',
-        params: [],
-        id: 67
-      })
-    });
+  const targetURL = `http://${ip}:8080/`;
+  const proxyURL = 'https://cors-proxy4.p.rapidapi.com/?url=';
+  const proxiedURL = proxyURL + encodeURIComponent(targetURL);
 
+  const options = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-rapidapi-key': 'hZw5guUWZImshs3M3gqrVC3n8qBap1Sirsfjsn3DBOKRaBT9ef',
+      'x-rapidapi-host': 'cors-proxy4.p.rapidapi.com'
+    },
+    body: JSON.stringify({
+      jsonrpc: '2.0',
+      method: 'node_isReady',
+      params: [],
+      id: 67
+    })
+  };
+
+  try {
+    const response = await fetch(proxiedURL, options);
     const data = await response.json();
     console.log(`Node at ${ip} is ready:`, data.result);
     return data.result;
@@ -150,6 +158,7 @@ async function fetchSepoliaEthBalance(wallet) {
     return null;
   }
 }
+
 
 
 async function renderCardSkeleton(prover, index) {
