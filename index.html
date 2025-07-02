@@ -71,7 +71,7 @@
       <input name="index" type="hidden">
       <input name="name" placeholder="Node Name" required class="w-full p-2 rounded bg-gray-700"/>
       <input name="ip" placeholder="IP Address" required class="w-full p-2 rounded bg-gray-700"/>
-      <input name="wallet" placeholder="Wallet Address" required class="w-full p-2 rounded bg-gray-700"/>
+      <input name="wallet" placeholder="Node Wallet Address" required class="w-full p-2 rounded bg-gray-700"/>
       <select name="type" required class="w-full p-2 rounded bg-gray-700">
         <option value="prover">Prover</option>
         <option value="sequencer">Sequencer</option>
@@ -192,7 +192,7 @@ async function renderCardSkeleton(prover, index) {
         </div>
       </div>
       <p class="text-sm text-gray-300"><strong>IP:</strong> ${prover.ip}</p>
-      <p class="text-sm text-gray-300"><strong>Wallet:</strong> ${prover.wallet}</p>
+      <p class="text-sm text-gray-300 truncate"><strong>Node Address:</strong> ${prover.wallet}</p>
       <p class="text-sm text-gray-300"><strong>Sepolia ETH:</strong> <span class="eth-balance"></span></p>
       ${prover.type === 'prover' ? `
       <p class="text-sm text-gray-300"><strong>Last Tx:</strong> <span class="last-tx"></span></p>
