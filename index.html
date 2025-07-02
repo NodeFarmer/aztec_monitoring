@@ -27,12 +27,12 @@
   <h1 class="text-2xl font-bold">Aztec Node Monitor</h1>
   <div class="flex gap-2 items-center">
     <input id="apikey-input" placeholder="Etherscan API Key" class="bg-gray-700 text-white p-2 rounded" />
-    <button id="save-apikey" class="bg-green-500 text-black px-4 py-2 rounded">Save Key</button>
+    <button id="save-apikey" class="bg-green-500 text-white px-4 py-2 rounded">Save Key</button>
   </div>
   <div class="flex gap-2 items-center">
-    <button id="add-btn" class="bg-green-500 text-black px-4 py-2 rounded">Add Node</button>
-    <button id="export-btn" class="bg-blue-500 text-black px-4 py-2 rounded">Export</button>
-    <label for="import-file" class="bg-yellow-400 text-black px-4 py-2 rounded cursor-pointer">Import</label>
+    <button id="add-btn" class="bg-green-500 text-white px-4 py-2 rounded">Add Node</button>
+    <button id="export-btn" class="bg-blue-500 text-white px-4 py-2 rounded">Export</button>
+    <label for="import-file" class="bg-yellow-400 text-white px-4 py-2 rounded cursor-pointer">Import</label>
     <input type="file" id="import-file" class="hidden" accept=".json">
   </div>
 </header>
@@ -171,7 +171,7 @@ async function fetchSepoliaEthBalance(wallet) {
 
     const data = await response.json();
     console.log(`Node at ${ip} is ready:`, data.status);
-    return data.status ? data.status : "error :" + data.error;
+    return data;
   } catch (error) {
     console.error(`Error checking node readiness at ${ip}:`, error);
     return null;
@@ -196,7 +196,9 @@ async function renderCardSkeleton(prover, index) {
       <p class="text-sm text-gray-300"><strong>Sepolia ETH:</strong> <span class="eth-balance"></span></p>
       ${prover.type === 'prover' ? `
       <p class="text-sm text-gray-300"><strong>Last Tx:</strong> <span class="last-tx"></span></p>
-      <p class="text-sm text-gray-300 mt-2"><strong>Transactions:</strong> <span class="tx-count text-green-400 font-bold"></span></p>` : ''}
+      <p class="text-sm text-gray-300 mt-2"><strong>Transactions:</strong> <span class="tx-count text-green-400 font-bold"></span></p>` : `
+      <p class="text-sm text-gray-300"><strong>Proven Blocks:</strong> <span class="proven-blocks"></span></p> 
+      `}
       <div class="mt-4 flex justify-end gap-2">
         <button onclick="editNode(${index})" class="text-yellow-400 hover:underline">Edit</button>
         <button onclick="deleteNode(${index})" class="text-red-500 hover:underline">Delete</button>
@@ -213,7 +215,7 @@ async function updateCardData(prover, index) {
   const txCountEl = card.querySelector('.tx-count');
   const statusDot = card.querySelector('span.rounded-full');
   const ethEl = card.querySelector('.eth-balance');
-
+  const provenBlocks = card.querySelector('.proven-blocks');
   // 🌀 Show spinners before loading
   if (txEl) txEl.innerHTML = '<span class="spinner"></span>';
   if (txCountEl) txCountEl.innerHTML = '<span class="spinner"></span>';
@@ -238,18 +240,18 @@ async function updateCardData(prover, index) {
   }
   else if (prover.type === 'sequencer')
   {
-  const answering = await fetchIsReady(prover.ip);
-  if(answering == "ok")
-  {
-     statusDot.className = `w-3 h-3 rounded-full bg-green-500`;
+  const data = await fetchIsReady(prover.ip);
+    if(data && data.status && data.status == "ok" && data.proven_block_number)
+    {
+      statusDot.className = `w-3 h-3 rounded-full bg-green-500`;
       statusDot.title =  "Active" ;
-  }
+      provenBlocks.innerText = data.proven_block_number;
+    }
     else
-  {
-
+    {
       statusDot.className = 'w-3 h-3 rounded-full bg-red-500';
       statusDot.title = 'Inactive';
-  }
+    }
 
   }
 
